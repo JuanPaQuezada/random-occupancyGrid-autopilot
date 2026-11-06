@@ -104,8 +104,5 @@ class Map:
             print(' '.join(['#' if cell==float('inf') else '.' for cell in row]))
             # use '#' for walls and '.' for free space    
 
-map = Map(width=50, height=50, density_rate=0.3, hardness_rate=0.5, start=(0, 0), goal=(49, 49), seed=42)
-map.generate_map()
-map.print_map()
 
 
