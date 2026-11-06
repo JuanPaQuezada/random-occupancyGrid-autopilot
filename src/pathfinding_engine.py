@@ -21,6 +21,17 @@ heapq.heapify(min_heap)
 def manhattan_distance(p1, p2):
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
+def has_clearance(cost_map, x, y, clearance):
+    height = len(cost_map)
+    width = len(cost_map[0])
+    for dy in range(-clearance, clearance + 1):
+        for dx in range(-clearance, clearance + 1):
+            nx, ny = x + dx, y + dy
+            if 0<=ny < height and 0<=nx < width:
+                if cost_map[ny][nx] == float('inf'):
+                    return False
+    return True
+
 def a_star(cost_map, start, goal):
     open_list = []
     closed_list = {}
@@ -35,7 +46,7 @@ def a_star(cost_map, start, goal):
         
         if current.g > closed_list.get(current_pos, float('inf')):
             continue
-        
+       #reducir la distancia de los caminos abiertos y cerrados para que no tope con la pared  
         if current_pos == goal:
             path=[]
             while current:
@@ -47,6 +58,8 @@ def a_star(cost_map, start, goal):
             nx, ny = current.x + dx, current.y + dy
             nbr_pos = (nx, ny)
             if 0 <= ny < len(cost_map) and 0 <= nx < len(cost_map[0]):
+                if not has_clearance(cost_map, nx, ny, clearance=1):
+                    continue
                 step_cost = cost_map[ny][nx]
                 
                 # Ignorar obstáculos
