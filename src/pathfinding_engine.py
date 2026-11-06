@@ -55,7 +55,6 @@ def a_star(cost_map, start, goal):
                     
                 tentative_g = current.g + step_cost
                 
-                # Insertar en OPEN solo si la nueva ruta es más barata o el nodo es nuevo
                 if tentative_g < closed_list.get(nbr_pos, float('inf')):
                     closed_list[nbr_pos] = tentative_g
                     neighbor_h = manhattan_distance(nbr_pos, goal)

@@ -10,7 +10,6 @@ if __name__ == "__main__":
         grid = map.generate_map()
         #A star implementation to find the route from start to goal and then show it
         route = a_star(cost_map=grid, start=start_node, goal=goal_node)
-        print("")
         show_route = visualize_path(cost_map=grid, path=route, start=start_node, goal=goal_node)
         
         
