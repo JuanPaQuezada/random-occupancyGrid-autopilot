@@ -39,7 +39,7 @@ def a_star(cost_map, start, goal):
     start_node = Node(start[0], start[1], g=0, h=start_h)
     heapq.heappush(open_list, start_node)
     closed_list[(start[0], start[1])] = 0
-    
+     
     while open_list:
         current = heapq.heappop(open_list)
         current_pos = (current.x, current.y)
@@ -57,8 +57,10 @@ def a_star(cost_map, start, goal):
         for dx, dy in [(1,0), (0,1), (-1,0), (0,-1)]:
             nx, ny = current.x + dx, current.y + dy
             nbr_pos = (nx, ny)
+            clearance_one= has_clearance(cost_map, nx, ny, clearance=1)
+            clearance_zero= has_clearance(cost_map, nx, ny, clearance=0)
             if 0 <= ny < len(cost_map) and 0 <= nx < len(cost_map[0]):
-                if not has_clearance(cost_map, nx, ny, clearance=1):
+                if not clearance_one and not clearance_zero:
                     continue
                 step_cost = cost_map[ny][nx]
                 
@@ -67,7 +69,8 @@ def a_star(cost_map, start, goal):
                     continue
                     
                 tentative_g = current.g + step_cost
-                
+                if not clearance_one:
+                    tentative_g +=0.5 #penaliize the cost if there is no free space of 1 cell around the neighbor
                 if tentative_g < closed_list.get(nbr_pos, float('inf')):
                     closed_list[nbr_pos] = tentative_g
                     neighbor_h = manhattan_distance(nbr_pos, goal)
