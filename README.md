@@ -1,5 +1,5 @@
-# stochastic-maze-navigation
-An autonomous maze-solving system featuring probabilistic occupancy grids, stochastic terrain generation, and real-time pathfinding using optimized A* and D* algorithms with probabilistic noise.
+# Random Occupancy Grid Autopilot
+An autonomous maze-solving system featuring probabilistic occupancy grids, stochastic terrain generation, and real-time pathfinding using D* algorithm with probabilistic noise in ROS.
 
 
 ## Adaptive Path Clearance and Wall Avoidance
@@ -15,6 +15,9 @@ A penalty is added to candidates without the preferred clearance. This penalty d
 The `Map` class implements the representation and generation of the navigation environment through a stochastic occupancy grid. Instead of determining the state of each cell using a sequential random process, the system uses spatial hashing to calculate each cell's value independently based on its position and a seed.
 
 This procedure generates values that appear random while remaining reproducible and consistent for the same position and seed. The primary advantage is that a cell's state can be obtained on demand without storing the entire map or iterating through all previous cells, reducing memory usage and computational overhead.
+<p align="center">
+    <img width="248" height="219" alt="image" src="https://github.com/user-attachments/assets/a5658819-cf5e-42a9-bb12-2c7fefc8dbbf" />
+</p>
 
 The `get_cell_cost` function adds an important exception to the probabilistic model: positions belonging to `carved_corridors` always receive a cost of `1.0`, even if the hash would otherwise classify them as obstacles or high-cost terrain. This guarantees that the generated maze contains traversable routes for the navigation algorithms.
 
