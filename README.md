@@ -1,5 +1,5 @@
 # Random Occupancy Grid Autopilot
-An autonomous maze-solving system featuring probabilistic occupancy grids, stochastic terrain generation, and real-time pathfinding using D* algorithm with probabilistic noise in ROS.
+An autonomous maze-solving system featuring probabilistic occupancy grids, stochastic terrain generation, and real-time pathfinding using D* algorithm with probabilistic noise in ROS and Rviz.
 
 
 ## Adaptive Path Clearance and Wall Avoidance
