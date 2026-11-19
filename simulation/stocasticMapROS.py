@@ -1,9 +1,18 @@
+import os
+import sys
+
+
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 import rospy
 from std_msgs.msg import String
-from geometry_msgs.msg import Point, PoseStamped
+from geometry_msgs.msg import Point, PoseStamped, TransformStamped
 from nav_msgs.msg import OccupancyGrid
 from visualization_msgs.msg import Marker
 from src.mazeMapping import Map 
+from src.pathfinding_engine import a_star, visualize_path
+import tf2_ros
 
 class StochasticMapROS:
     def __init__(self):
@@ -11,6 +20,16 @@ class StochasticMapROS:
         self.map_pub = rospy.Publisher('/stochastic_map', OccupancyGrid, queue_size=10, latch=True)
         self.wall_pub = rospy.Publisher('/maze_walls_3d', Marker, queue_size=10,latch=True)
         self.rate = rospy.Rate(1)  # 1 Hz
+        self.tf_broadcaster=tf2_ros.StaticTransformBroadcaster()
+        static_tf=TransformStamped()
+        static_tf.header.stamp=rospy.Time.now()
+        static_tf.header.frame_id="map"
+        static_tf.child_frame_id="odom"
+        static_tf.transform.translation.x=-12.25
+        static_tf.transform.translation.y=-12.25
+        static_tf.transform.translation.z=0.0
+        static_tf.transform.rotation.w=1.0
+        self.tf_broadcaster.sendTransform(static_tf)
     def generate_and_publish_map(self,ambient_density):
         start_node = (0, 0)
         goal_node = (49, 49)
@@ -73,6 +92,10 @@ class StochasticMapROS:
         #publish the map
         self.map_pub.publish(grid_msg)
         self.wall_pub.publish(marker)
+    def path_finding(self, grid, start, goal):
+        route = a_star(cost_map=grid, start=start, goal=goal)
+        show_route = visualize_path(cost_map=grid, path=route, start=start, goal=goal)
+        return route, show_route
 
     
     
