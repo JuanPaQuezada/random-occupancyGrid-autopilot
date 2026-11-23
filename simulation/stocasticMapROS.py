@@ -8,7 +8,7 @@ if ROOT_DIR not in sys.path:
 import rospy
 from std_msgs.msg import String
 from geometry_msgs.msg import Point, PoseStamped, TransformStamped
-from nav_msgs.msg import OccupancyGrid
+from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
 from src.mazeMapping import Map 
 from src.pathfinding_engine import a_star, visualize_path
@@ -19,7 +19,7 @@ class StochasticMapROS:
         rospy.init_node('stochastic_map_node', anonymous=True)
         self.map_pub = rospy.Publisher('/stochastic_map', OccupancyGrid, queue_size=10, latch=True)
         self.wall_pub = rospy.Publisher('/maze_walls_3d', Marker, queue_size=10,latch=True)
-        self.rate = rospy.Rate(1)  # 1 Hz
+        self.path_pub=rospy.Publisher('/planned_path', Path, queue_size=10, latch=True) 
         self.tf_broadcaster=tf2_ros.StaticTransformBroadcaster()
         static_tf=TransformStamped()
         static_tf.header.stamp=rospy.Time.now()
@@ -92,10 +92,33 @@ class StochasticMapROS:
         #publish the map
         self.map_pub.publish(grid_msg)
         self.wall_pub.publish(marker)
+
+        route, _ = self.path_finding(grid, start_node, goal_node)
+        self.publish_path(route, resolution)
     def path_finding(self, grid, start, goal):
-        route = a_star(cost_map=grid, start=start, goal=goal)
+        route = a_star(grid, start, goal)
         show_route = visualize_path(cost_map=grid, path=route, start=start, goal=goal)
         return route, show_route
+    def publish_path(self, route, resolution):
+        if not route:
+            rospy.logwarn("No path found from start to goal.")
+            return
+        path_msg=Path()
+        path_msg.header.stamp=rospy.Time.now()
+        path_msg.header.frame_id="map"
+        for (x,y) in route:
+            pose=PoseStamped()
+            pose.header.stamp=rospy.Time.now()
+            pose.header.frame_id="map"
+            pose.pose.position.x=-12.5+(x+0.5)*resolution
+            pose.pose.position.y=-12.5+(y+0.5)*resolution
+            pose.pose.position.z=0.05
+            pose.pose.orientation.w=1.0
+            path_msg.poses.append(pose)
+
+        self.path_pub.publish(path_msg)
+        rospy.loginfo("Path published with {} waypoints.".format(len(route)))
+
 
     
     
