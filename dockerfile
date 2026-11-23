@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 # Clone and compile the turtlebot3_simulations package catkin workspace
 RUN mkdir -p /root/catkin_ws/src && \
     cd /root/catkin_ws/src && \
-    git clone -b noetic-devel https://github.com && \
+    git clone -b noetic https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git && \
     /bin/bash -c "source /opt/ros/noetic/setup.bash && cd /root/catkin_ws && catkin_make"
 
 

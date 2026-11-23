@@ -7,9 +7,11 @@
     <node pkg="turtlebot3_fake" type="turtlebot3_fake_node" name="turtlebot3_fake_node" output="screen"/>
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
 
-    <node pkg="rosout" type="rosout" name="stochastic_map_node" output="screen" 
-          launch-prefix="python3 $(arg sim_dir)/stocasticMapROS.py #"/>
-    
+    <node pkg="turtlebot3_fake" type="turtlebot3_fake_node" name="stochastic_map_node" output="screen" 
+          launch-prefix="bash -c 'exec python3 $(arg sim_dir)/stocasticMapROS.py'"/>
+
+    <node pkg="turtlebot3_fake" type="turtlebot3_fake_node" name="autopilot_follower_node" output="screen"
+          launch-prefix="bash -c 'sleep 2; exec python3 $(arg sim_dir)/autopilot_follower.py'"/>
+
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg sim_dir)/maze_sim.rviz"/>
 </launch>
-
