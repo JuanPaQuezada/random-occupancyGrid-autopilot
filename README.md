@@ -12,7 +12,9 @@ The pathfinding engine validates the neighboring quadrants around each candidate
 The navigation cost includes a preference for paths that preserve one free cell between the route and nearby obstacles. When a candidate cell satisfies `clearance=1`, it keeps the preferred safety margin. If no route with this separation is available, the algorithm falls back to `clearance=0`, allowing it to pass through a narrow opening while still rejecting cells that are actual obstacles.
 
 A penalty is added to candidates without the preferred clearance. This penalty does not make narrow passages impossible; it only makes them less attractive than equivalent paths that maintain one cell of separation. As a result, the planner avoids walls whenever possible while preserving the ability to find a valid path through constrained areas.
-
+<p align="center">
+    <img width="1207" height="847" alt="image" src="https://github.com/user-attachments/assets/a85d9833-007a-4713-af70-09ceb90fd4a5" />
+</p>
 ## Spatial Generation and Computational Cost Reduction
 
 The `Map` class implements the representation and generation of the navigation environment through a stochastic occupancy grid. Instead of determining the state of each cell using a sequential random process, the system uses spatial hashing to calculate each cell's value independently based on its position and a seed.
