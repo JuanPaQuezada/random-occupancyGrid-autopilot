@@ -12,7 +12,7 @@ The pathfinding engine validates the neighboring quadrants around each candidate
 The navigation cost includes a preference for paths that preserve one free cell between the route and nearby obstacles. When a candidate cell satisfies `clearance=1`, it keeps the preferred safety margin. If no route with this separation is available, the algorithm falls back to `clearance=0`, allowing it to pass through a narrow opening while still rejecting cells that are actual obstacles.
 
 A penalty is added to candidates without the preferred clearance. This penalty does not make narrow passages impossible; it only makes them less attractive than equivalent paths that maintain one cell of separation. As a result, the planner avoids walls whenever possible while preserving the ability to find a valid path through constrained areas.
-n<p align="center">
+<p align="center">
     <img width="1207" height="847" alt="image" src="https://github.com/user-attachments/assets/a85d9833-007a-4713-af70-09ceb90fd4a5" />
 </p>
 ## Spatial Generation and Computational Cost Reduction
@@ -102,7 +102,7 @@ The current map node, `stochastic_map_node`, generates a 50 × 50 occupancy grid
 | `/stochastic_map` | `nav_msgs/OccupancyGrid` | Two-dimensional occupancy grid; occupied cells are encoded as 100 and free cells as 0. |
 | `/maze_walls_3d` | `visualization_msgs/Marker` | `CUBE_LIST` marker containing the 3D positions of occupied cells. |
 | `/planned_path` | `nav_msgs/Path` | A* route represented as ordered `PoseStamped` waypoints in the `map` frame. |
-| `/tf` (static transform) | `tf2` transform | Relates the `map` and `odom` frames for consumers that need that coordinate transform. |
+| `/tf_static` | `tf2_msgs/TFMessage` | Carries the static transform relating the `map` and `odom` frames. |
 
 The map, marker, and path publishers are latched. A subscriber that connects after the map node has published can therefore receive the most recently published message, which is useful when RViz starts or reconnects after generation. In `simulation/maze_sim.rviz`, the Map, Marker, and Path displays subscribe to the corresponding topics above.
 
@@ -131,7 +131,7 @@ The graph methods in the implementation serve two separate purposes: connecting 
 
 | Algorithm or method | Where it is used | Purpose and implementation status |
 | --- | --- | --- |
-| Kruskal's algorithm | `src/mazeMapping.py`, `Map.kruskal` | Builds a connected, low-total-Manhattan-distance set of corridors over the sampled landmarks. Candidate edges are sorted by Manhattan distance, and an edge is carved only when it joins different components. |
+| Kruskal's algorithm | `src/mazeMapping.py`, `Map.kruskal` | Builds a minimum spanning tree over sampled landmarks using Manhattan-weighted candidate edges. An edge is carved only when it joins different components. |
 | Union-Find (disjoint-set) | `src/mazeMapping.py`, inside `Map.kruskal` | Tracks which landmarks are already connected while Kruskal processes edges. `find` uses path compression; accepted edges merge components. The accepted landmark edges are converted to horizontal and vertical carved corridors. |
 | A* search | `src/pathfinding_engine.py`, `a_star`; invoked by `simulation/stocasticMapROS.py` | Finds a route from `(0, 0)` to `(49, 49)` on the generated grid. It uses four-directional neighbors, Manhattan distance as its heuristic, terrain traversal cost as `g`, and a 0.5 penalty when a neighbor lacks the preferred one-cell clearance. |
 | Spatial hashing | `src/mazeMapping.py`, `space_hashing` | Assigns obstacle or free-cell costs from coordinates and a seed. This produces the stochastic occupancy grid; it is a deterministic spatial sampling method for a given seed, not a graph-search algorithm. |
